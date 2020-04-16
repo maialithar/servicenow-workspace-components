@@ -1,0 +1,23 @@
+{
+  "development": {
+    "proxy": {
+      "origin": "http://localhost:8080",
+      "headers": {
+        "Authorization": "Basic YWRtaW46YWRtaW4="
+      },
+      "proxies": []
+    },
+    "test": {
+        "unit": [
+            "@servicenow/cli-jest-plugin"
+        ]
+    }
+  },
+  "styles": {
+      "themes": [{
+        "module": "@servicenow/sass-theme",
+        "main": ["theme.scss"],
+        "copyFiles": ["type/*", "*.scss"]
+      }]
+  }
+}

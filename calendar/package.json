@@ -1,0 +1,30 @@
+{
+	"name": "calendar-component",
+	"version": "0.0.1",
+	"private": false,
+	"description": "A calendar component.",
+	"keywords": [
+		"ServiceNow",
+		"Now Experience UI Component",
+		"calendar-component"
+	],
+	"readme": "./README.md",
+	"engines": {
+		"node": ">=8.6.0",
+		"npm": ">=5.3.0"
+	},
+	"module": "src/index.js",
+	"dependencies": {
+		"@servicenow/ui-core": "orlando",
+		"@servicenow/ui-renderer-snabbdom": "orlando",
+		"@servicenow/cli-archetype": "17.0.2",
+		"@servicenow/cli-component-archetype": "17.0.2",
+		"@servicenow/sass-theme": "orlando",
+		"@servicenow/sass-kit": "orlando",
+		"@servicenow/library-translate": "orlando"
+	},
+	"devDependencies": {
+		"@servicenow/cli-archetype-dev": "17.0.2",
+		"@servicenow/cli-component-archetype-dev": "17.0.2"
+	}
+}

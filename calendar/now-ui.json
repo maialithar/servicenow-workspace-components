@@ -1,0 +1,14 @@
+{
+	"components": {
+	    "x-94086-calendar-component": {
+			"innerComponents": [],
+			"uiBuilder": {
+				"associatedTypes": ["global.core"],
+				"label": "Calendar",
+				"icon": "calendar-clock-fill",
+				"description": "Calendar component."
+			}
+	    }
+	},
+	"scopeName": "x_94086_calendar_0"
+}
