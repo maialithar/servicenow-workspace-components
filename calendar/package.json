@@ -15,13 +15,14 @@
 	},
 	"module": "src/index.js",
 	"dependencies": {
-		"@servicenow/ui-core": "orlando",
-		"@servicenow/ui-renderer-snabbdom": "orlando",
 		"@servicenow/cli-archetype": "17.0.2",
 		"@servicenow/cli-component-archetype": "17.0.2",
-		"@servicenow/sass-theme": "orlando",
+		"@servicenow/library-translate": "orlando",
 		"@servicenow/sass-kit": "orlando",
-		"@servicenow/library-translate": "orlando"
+		"@servicenow/sass-theme": "orlando",
+		"@servicenow/ui-core": "orlando",
+		"@servicenow/ui-renderer-snabbdom": "orlando",
+		"tui-calendar": "^1.12.12"
 	},
 	"devDependencies": {
 		"@servicenow/cli-archetype-dev": "17.0.2",

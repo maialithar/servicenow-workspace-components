@@ -1,1 +1,8 @@
 @import '@servicenow/sass-kit/host';
+@import 'css/tui-calendar';
+@import 'css/tui-date-picker';
+@import 'css/tui-time-picker';
+
+.calendar {
+    height: 800px;
+}
