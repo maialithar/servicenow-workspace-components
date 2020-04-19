@@ -1,11 +1,13 @@
 {
   "development": {
     "proxy": {
-      "origin": "http://localhost:8080",
+      "origin": "https://dev58935.service-now.com",
       "headers": {
-        "Authorization": "Basic YWRtaW46YWRtaW4="
+        "Authorization": "Basic d29ya3NwYWNlX2Rldjp3b3Jrc3BhY2VfZGV2",
+        "Content-Type": "application/json",
+				"Accept": "application/json"
       },
-      "proxies": []
+      "proxies": ["/api"]
     },
     "test": {
         "unit": [

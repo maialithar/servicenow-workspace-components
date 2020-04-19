@@ -21,6 +21,7 @@
 		"@servicenow/sass-kit": "orlando",
 		"@servicenow/sass-theme": "orlando",
 		"@servicenow/ui-core": "orlando",
+		"@servicenow/ui-effect-http": "^17.0.1",
 		"@servicenow/ui-renderer-snabbdom": "orlando",
 		"tui-calendar": "^1.12.12"
 	},
