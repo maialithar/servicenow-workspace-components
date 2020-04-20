@@ -1,92 +1,65 @@
-import {
-	SCHEDULE_FETCH_SUCCESS,
-	SCHEDULE_FETCH_ERROR,
-	SCHEDULE_FETCH_START,
-	SCHEDULE_FETCH_PROGRESS,
-	SCHEDULE_FETCH_REQUEST
-} from './schedule'
+import * as schedule from './schedule'
 import {actionTypes} from '@servicenow/ui-core';
-import Calendar from 'tui-calendar';
-import {createHttpEffect} from '@servicenow/ui-effect-http';
+import CalendarComponent from './Calendar';
 
-const getSchedules = createHttpEffect(
-	'/api/now/table/cmn_schedule_blackout', {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json'
-		},
-		pathParams: [],
-		dataParam: 'data',
-		successActionType: SCHEDULE_FETCH_SUCCESS,
-		errorActionType: SCHEDULE_FETCH_ERROR,
-		startActionType: SCHEDULE_FETCH_START,
-		progressActionType: SCHEDULE_FETCH_PROGRESS
-	}
-);
+var calendarComponent = CalendarComponent;
 
 export default {
 	actionHandlers: {
 		[actionTypes.COMPONENT_BOOTSTRAPPED]: ({dispatch}) => {
-			dispatch(SCHEDULE_FETCH_REQUEST);
+			dispatch(schedule.SCHEDULE_FETCH_REQUEST, {query: 'typeINblackout,maintenance'});
 		},
 		[actionTypes.COMPONENT_RENDERED]: {
 			effect({state, action: {payload: {host}}, dispatch}) {
-				dispatch(SCHEDULE_FETCH_START);
-
-				var calendar = new Calendar(host.shadowRoot.childNodes[0], {
-					defaultView: 'month',
-					taskView: true,
-					template: {
-						monthDayname: function(dayname) {
-							return '<span class="calendar-week-dayname-name">' + dayname.label + '</span>';
-						}
-					},
-					isReadOnly: true,
-					month: {
-						startDayOfWeek: 1,
-						narrowWeekend: true,
-						visibleScheduleCount: 3
-					}
-				});
+				dispatch(schedule.SCHEDULE_FETCH_START);
+				calendarComponent.createCalendar(host.shadowRoot.childNodes[0]);
 			}
 		},
-		[actionTypes.COMPONENT_ERROR_THROWN]: ({action: {payload}}) => {
-			console.log(payload)
+		[actionTypes.COMPONENT_ERROR_THROWN]: ({action: {payload}}) => {},
+		[schedule.SCHEDULE_FETCH_REQUEST]: schedule.getSchedules,
+		[schedule.SCHEDULE_ENTRY_FETCH_REQUEST]: schedule.getScheduleEntry,
+		[schedule.SCHEDULE_FETCH_SUCCESS]: ({action, dispatch}) => {
+			for (var singleSchedule of action.payload.result){
+				dispatch(schedule.SCHEDULE_ENTRY_FETCH_REQUEST, {
+					query: 'schedule=' + singleSchedule.sys_id, 
+					type: singleSchedule.type,
+					scheduleName: singleSchedule.name
+				});
+			} 
 		},
-		[SCHEDULE_FETCH_SUCCESS]: ({action, updateState}) => {
-			console.log(action);
-			console.log(updateState);
-		},
-		[SCHEDULE_FETCH_ERROR]: ({action, updateState}) => {
-			console.log(action);
-			console.log(updateState);
-		},
-		[SCHEDULE_FETCH_START]: ({action, updateState}) => {
-			console.log(action);
-			console.log(updateState);
-		},
-		[SCHEDULE_FETCH_PROGRESS]: ({action, updateState}) => {
-			console.log(action);
-			console.log(updateState);
-		},
-		[SCHEDULE_FETCH_REQUEST]: ({action, updateState}) => {
-			console.log(action);
-			console.log(updateState);
-			console.log(getSchedules);
-			createHttpEffect(
-				'/api/now/table/cmn_schedule_blackout', {
-					method: 'GET',
-					headers: {},
-					pathParams: [],
-					dataParam: 'data',
-					batch: false,
-					successActionType: SCHEDULE_FETCH_SUCCESS,
-					errorActionType: SCHEDULE_FETCH_ERROR,
-					startActionType: SCHEDULE_FETCH_START,
-					progressActionType: SCHEDULE_FETCH_PROGRESS
+		[schedule.SCHEDULE_FETCH_ERROR]: ({action, updateState}) => {},
+		[schedule.SCHEDULE_FETCH_START]: ({action, updateState}) => {},
+		[schedule.SCHEDULE_FETCH_PROGRESS]: ({action, updateState}) => {},
+		[schedule.SCHEDULE_ENTRY_FETCH_SUCCESS]: ({action}) => {
+			let type = action.meta.request.updatedUrl.split('&')[1].split('sysparm_type=')[1];
+			let scheduleName = decodeURI(action.meta.request.updatedUrl.split('&')[2].split('sysparm_scheduleName=')[1]);
+			for (var singleEntry of action.payload.result){
+				let dateStart = singleEntry.start_date_time;
+				let dateEnd = singleEntry.end_date_time;
+				let startDay = singleEntry.days_of_week;
+				let duration = 0;
+				let recurringDates = [];
+				
+				dateStart = dateStart.slice(0, 4) + '-' + dateStart.slice(4, 6) + '-' + dateStart.slice(6, 11) + ':' + dateStart.slice(11, 13) + ':' + dateStart.slice(13, 15);
+				dateEnd = dateEnd.slice(0, 4) + '-' + dateEnd.slice(4, 6) + '-' + dateEnd.slice(6, 11) + ':' + dateEnd.slice(11, 13) + ':' + dateEnd.slice(13, 15);
+				duration = new Date(dateEnd) - new Date(dateStart);
+				recurringDates = calendarComponent.recurringDates(new Date(dateStart), new Date(), 7);
+
+				for (var startRecDate of recurringDates) {
+					calendarComponent.calendar.createSchedules([{
+						id: singleEntry.sys_id,
+						calendarId: type,
+						title: scheduleName,
+						category: 'time',
+						dueDateClass: '',
+						start: startRecDate,
+						end: startRecDate + duration,
+						recurrenceRule: singleEntry.repeat_type,
+						isAllDay: singleEntry.all_day,
+						state: 'busy'
+					}]);
 				}
-			);
-		},
+			}
+		}
 	}
 }
